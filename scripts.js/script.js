@@ -1,5 +1,4 @@
 const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
-const API_KEY = process.env.TMDB_API_KEY;
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
     let currentLanguage = 'en-US';

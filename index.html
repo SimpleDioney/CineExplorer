@@ -1,74 +1,71 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CineExplorer - Your Cinematic Journey</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="./styles.css/style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <div class="logo">CineExplorer</div>
-        <div class="search-bar">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Discover new movies..."
-          />
-        </div>
-        <div class="controls">
-          <select id="language-select">
-            <option value="en-US">English</option>
-            <option value="pt-BR">Português</option>
-            <option value="es-ES">Español</option>
-          </select>
-          <button id="surprise-me">Surprise Me</button>
-        </div>
-      </header>
-
-      <main class="movie-display">
-        <div id="movie-header" class="movie-header">
-          <div class="movie-title-container">
-            <h1 id="movie-title" class="movie-title">Loading...</h1>
-            <p id="movie-meta" class="movie-meta"></p>
-          </div>
-        </div>
-        <div class="movie-content">
-          <p id="movie-overview" class="movie-overview"></p>
-
-          <div id="genre-tags" class="genre-tags"></div>
-
-          <div class="rating-container">
-            <div id="star-rating"></div>
-            <span id="rating-value" class="rating-value"></span>
-          </div>
-
-          <h2 class="section-title">Trailer</h2>
-          <div id="trailer-container" class="trailer-container"></div>
-
-          <h2 class="section-title">Main Cast</h2>
-          <div id="cast-list" class="cast-list"></div>
-
-          <h2 class="section-title">Where to Watch</h2>
-          <div id="providers-container" class="providers-container"></div>
-
-          <h2 class="section-title">Similar Movies</h2>
-          <div id="similar-movies" class="similar-movies"></div>
-        </div>
-      </main>
-    </div>
-
-    <div id="popup-overlay" class="popup-overlay" style="display: none">
-      <div class="popup-content">
-        <button class="popup-close">&times;</button>
-        <h2 id="popup-title" class="popup-title"></h2>
-        <img id="popup-image" class="popup-image" src="" alt="Actor photo" />
-        <div id="popup-info" class="popup-info"></div>
-        <p id="popup-bio" class="popup-bio"></p>
-        <div id="popup-filmography" class="popup-filmography"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineExplorer</title>
+    <link rel="stylesheet" href="styles.css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">CineExplorer</div>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Discover new movies...">
       </div>
-    </div>
+      <div class="controls">
+        <select id="language-select">
+          <option value="en-US">English</option>
+          <option value="pt-BR">Português</option>
+          <option value="es-ES">Español</option>
+        </select>
+        <button id="surprise-me">Surprise Me</button>
+      </div>
+    </header>
+    
+    <main class="movie-display">
+      <div id="movie-header" class="movie-header">
+        <div class="movie-title-container">
+          <h1 id="movie-title" class="movie-title">Loading...</h1>
+          <p id="movie-meta" class="movie-meta"></p>
+        </div>
+      </div>
+      <div class="movie-content">
+        <p id="movie-overview" class="movie-overview"></p>
+        
+        <div id="genre-tags" class="genre-tags"></div>
 
-    <script src="./scripts.js/script.js"></script>
-  </body>
+        <div class="rating-container">
+          <div id="star-rating"></div>
+          <span id="rating-value" class="rating-value"></span>
+        </div>
+
+        <h2 class="section-title">Trailer</h2>
+        <div id="trailer-container" class="trailer-container"></div>
+        
+        <h2 class="section-title">Main Cast</h2>
+        <div id="cast-list" class="cast-list"></div>
+        
+        <h2 class="section-title">Where to Watch</h2>
+        <div id="providers-container" class="providers-container"></div>
+        
+        <h2 class="section-title">Similar Movies</h2>
+        <div id="similar-movies" class="similar-movies"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="popup-overlay" class="popup-overlay" style="display: none;">
+    <div class="popup-content">
+      <button class="popup-close">&times;</button>
+      <h2 id="popup-title" class="popup-title"></h2>
+      <img id="popup-image" class="popup-image" src="" alt="Actor photo">
+      <div id="popup-info" class="popup-info"></div>
+      <p id="popup-bio" class="popup-bio"></p>
+      <div id="popup-filmography" class="popup-filmography"></div>
+    </div>
+  </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="scripts.js/script.js"></script>
+</body>
 </html>

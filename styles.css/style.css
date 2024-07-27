@@ -21,10 +21,20 @@
     line-height: 1.6;
   }
 
+  body.popup-open {
+    overflow: hidden;
+  }
+
+  body.popup-open .container {
+    filter: grayscale(100%);
+    pointer-events: none;
+  }
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    transition: filter 0.3s ease;
   }
 
   .header {

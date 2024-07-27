@@ -2,6 +2,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
     let currentLanguage = 'en-US';
+    let currentMovieId = null;
 
     const translations = {
       'en-US': {
@@ -63,10 +64,12 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
           movieId = randomMovieResponse.data.results[randomIndex].id;
         }
 
+        currentMovieId = movieId;
         const movieResponse = await axios.get(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${currentLanguage}&append_to_response=videos,credits,similar,watch/providers`);
         const movie = movieResponse.data;
 
         updateUI(movie);
+        window.scrollTo(0, 0); // Scroll to top when a new movie is loaded
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -216,7 +219,17 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       return new Date(dateString).toLocaleDateString(currentLanguage, options);
     }
 
-    async function openActorPopup(actorId) {
+    function openActorPopup(actorId) {
+      document.body.classList.add('popup-open');
+      showPopup(actorId);
+    }
+
+    function closeActorPopup() {
+      document.body.classList.remove('popup-open');
+      document.getElementById('popup-overlay').style.display = 'none';
+    }
+
+    async function showPopup(actorId) {
       const popupOverlay = document.getElementById('popup-overlay');
       const popupTitle = document.getElementById('popup-title');
       const popupImage = document.getElementById('popup-image');
@@ -266,7 +279,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
           item.addEventListener('click', (event) => {
             const movieId = event.target.getAttribute('data-movie-id');
             fetchMovieData(movieId);
-            popupOverlay.style.display = 'none';
+            closeActorPopup();
           });
         });
 
@@ -277,14 +290,16 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       }
     }
 
-    document.querySelector('.popup-close').addEventListener('click', () => {
-      document.getElementById('popup-overlay').style.display = 'none';
-    });
+    document.querySelector('.popup-close').addEventListener('click', closeActorPopup);
 
     document.getElementById('language-select').addEventListener('change', (event) => {
       currentLanguage = event.target.value;
       updateLanguage();
-      fetchMovieData();
+      if (currentMovieId) {
+        fetchMovieData(currentMovieId);
+      } else {
+        fetchMovieData();
+      }
     });
 
     document.getElementById('search-input').addEventListener('keypress', async (event) => {

@@ -1,6 +1,6 @@
 const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     const BASE_URL = 'https://api.themoviedb.org/3';
-    const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
+    const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
     let currentLanguage = 'en-US';
     let currentMovieId = null;
 
@@ -16,7 +16,10 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         deathdate: "Died:",
         knownFor: "Known For:",
         filmography: "Filmography",
-        whereToWatch: "Where to Watch"
+        whereToWatch: "Where to Watch",
+        mostViewedMovies: "Most Viewed Movies in",
+        boxOfficeHits: "Box Office Hits",
+        topRatedMovies: "Top Rated Movies"
       },
       'pt-BR': {
         searchPlaceholder: "Descubra novos filmes...",
@@ -29,7 +32,10 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         deathdate: "Falecimento:",
         knownFor: "Conhecido por:",
         filmography: "Filmografia",
-        whereToWatch: "Onde Assistir"
+        whereToWatch: "Onde Assistir",
+        mostViewedMovies: "Filmes mais vistos em",
+        boxOfficeHits: "Sucessos de bilheteria",
+        topRatedMovies: "Melhores avaliados"
       },
       'es-ES': {
         searchPlaceholder: "Descubre nuevas películas...",
@@ -42,17 +48,59 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         deathdate: "Fallecimiento:",
         knownFor: "Conocido por:",
         filmography: "Filmografía",
-        whereToWatch: "Dónde Ver"
+        whereToWatch: "Dónde Ver",
+        mostViewedMovies: "Películas más vistas en",
+        boxOfficeHits: "Éxitos de taquilla",
+        topRatedMovies: "Mejor valoradas"
       }
     };
 
     function updateLanguage() {
       document.getElementById('search-input').placeholder = translations[currentLanguage].searchPlaceholder;
       document.getElementById('surprise-me').textContent = translations[currentLanguage].surpriseMe;
-      document.querySelector('.section-title:nth-of-type(1)').textContent = translations[currentLanguage].trailer;
-      document.querySelector('.section-title:nth-of-type(2)').textContent = translations[currentLanguage].mainCast;
-      document.querySelector('.section-title:nth-of-type(3)').textContent = translations[currentLanguage].whereToWatch;
-      document.querySelector('.section-title:nth-of-type(4)').textContent = translations[currentLanguage].similarMovies;
+      document.querySelector('#most-viewed .section-title').textContent = `${translations[currentLanguage].mostViewedMovies} ${new Date().getFullYear()}`;
+      document.querySelector('#box-office-hits .section-title').textContent = translations[currentLanguage].boxOfficeHits;
+      document.querySelector('#top-rated .section-title').textContent = translations[currentLanguage].topRatedMovies;
+      
+      if (document.getElementById('movie-details').style.display !== 'none') {
+        document.querySelector('#movie-details .section-title:nth-of-type(1)').textContent = translations[currentLanguage].trailer;
+        document.querySelector('#movie-details .section-title:nth-of-type(2)').textContent = translations[currentLanguage].mainCast;
+        document.querySelector('#movie-details .section-title:nth-of-type(3)').textContent = translations[currentLanguage].whereToWatch;
+        document.querySelector('#movie-details .section-title:nth-of-type(4)').textContent = translations[currentLanguage].similarMovies;
+      }
+    }
+
+    async function fetchMovieLists() {
+      const currentYear = new Date().getFullYear();
+      const lists = [
+        { id: 'most-viewed', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=popularity.desc&primary_release_year=${currentYear}` },
+        { id: 'box-office-hits', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=revenue.desc` },
+        { id: 'top-rated', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=vote_average.desc&vote_count.gte=1000` }
+      ];
+
+      for (const list of lists) {
+        try {
+          const response = await axios.get(list.url);
+          updateMovieList(list.id, response.data.results.slice(0, 10));
+        } catch (error) {
+          console.error(`Error fetching ${list.id} movies:`, error);
+        }
+      }
+    }
+
+    function updateMovieList(listId, movies) {
+      const movieList = document.querySelector(`#${listId} .movie-list`);
+      movieList.innerHTML = '';
+      movies.forEach(movie => {
+        const movieItem = document.createElement('div');
+        movieItem.className = 'movie-item';
+        movieItem.innerHTML = `
+          <img class="movie-poster" src="${IMG_BASE_URL}${movie.poster_path}" alt="${movie.title}">
+          <p class="movie-item-title">${movie.title}</p>
+        `;
+        movieItem.addEventListener('click', () => fetchMovieData(movie.id));
+        movieList.appendChild(movieItem);
+      });
     }
 
     async function fetchMovieData(movieId = null) {
@@ -69,10 +117,21 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         const movie = movieResponse.data;
 
         updateUI(movie);
-        window.scrollTo(0, 0); // Scroll to top when a new movie is loaded
+        showMovieDetails();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+    }
+
+    function showMovieDetails() {
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('movie-details').style.display = 'block';
+    }
+
+    function showMainContent() {
+      document.getElementById('main-content').style.display = 'block';
+      document.getElementById('movie-details').style.display = 'none';
     }
 
     function updateUI(movie) {
@@ -81,30 +140,23 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       document.getElementById('movie-overview').textContent = movie.overview;
       document.getElementById('movie-header').style.backgroundImage = `url(${IMG_BASE_URL}${movie.backdrop_path || movie.poster_path})`;
 
-      // Update genre tags
+      updateGenreTags(movie.genres);
+      updateStarRating(movie.vote_average);
+      updateTrailer(movie.videos.results);
+      updateCast(movie.credits.cast);
+      updateProviders(movie['watch/providers'].results);
+      updateSimilarMovies(movie.similar.results);
+    }
+
+    function updateGenreTags(genres) {
       const genreTagsContainer = document.getElementById('genre-tags');
       genreTagsContainer.innerHTML = '';
-      movie.genres.forEach(genre => {
+      genres.forEach(genre => {
         const genreTag = document.createElement('span');
         genreTag.className = 'genre-tag';
         genreTag.textContent = genre.name;
         genreTagsContainer.appendChild(genreTag);
       });
-
-      // Update star rating
-      updateStarRating(movie.vote_average);
-
-      // Update trailer
-      updateTrailer(movie.videos.results);
-
-      // Update cast
-      updateCast(movie.credits.cast);
-
-      // Update providers
-      updateProviders(movie['watch/providers'].results);
-
-      // Update similar movies
-      updateSimilarMovies(movie.similar.results);
     }
 
     function updateStarRating(rating) {
@@ -295,10 +347,14 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     document.getElementById('language-select').addEventListener('change', (event) => {
       currentLanguage = event.target.value;
       updateLanguage();
-      if (currentMovieId) {
-        fetchMovieData(currentMovieId);
+      if (document.getElementById('movie-details').style.display !== 'none') {
+        if (currentMovieId) {
+          fetchMovieData(currentMovieId);
+        } else {
+          fetchMovieData();
+        }
       } else {
-        fetchMovieData();
+        fetchMovieLists();
       }
     });
 
@@ -316,5 +372,10 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       fetchMovieData();
     });
 
+    document.querySelector('.logo').addEventListener('click', () => {
+      showMainContent();
+      fetchMovieLists();
+    });
+
     updateLanguage();
-    fetchMovieData();
+    fetchMovieLists();

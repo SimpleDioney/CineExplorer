@@ -1,8 +1,28 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const horizontalScrollContainers = document.querySelectorAll('.movie-list');
+  console.log('Horizontal scroll containers:', horizontalScrollContainers); // Debug log
+
+  horizontalScrollContainers.forEach(container => {
+    container.addEventListener('wheel', (event) => {
+      console.log('Scroll event detected on container:', container); // Debug log
+      if (event.deltaY !== 0) {
+        event.preventDefault();
+        container.scrollLeft += event.deltaY;
+      }
+    });
+  });
+});
+
+
+
 const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+    const horizontalScrollContainers = document.querySelectorAll('.movie-list');
     let currentLanguage = 'en-US';
     let currentMovieId = null;
+    let genres = [];
+    let selectedGenres = [];
 
     const translations = {
       'en-US': {
@@ -19,7 +39,8 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         whereToWatch: "Where to Watch",
         mostViewedMovies: "Most Viewed Movies in",
         boxOfficeHits: "Box Office Hits",
-        topRatedMovies: "Top Rated Movies"
+        topRatedMovies: "Top Rated Movies",
+        allGenres: "All Genres"
       },
       'pt-BR': {
         searchPlaceholder: "Descubra novos filmes...",
@@ -35,7 +56,8 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         whereToWatch: "Onde Assistir",
         mostViewedMovies: "Filmes mais vistos em",
         boxOfficeHits: "Sucessos de bilheteria",
-        topRatedMovies: "Melhores avaliados"
+        topRatedMovies: "Melhores avaliados",
+        allGenres: "Todos os Gêneros"
       },
       'es-ES': {
         searchPlaceholder: "Descubre nuevas películas...",
@@ -51,7 +73,8 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         whereToWatch: "Dónde Ver",
         mostViewedMovies: "Películas más vistas en",
         boxOfficeHits: "Éxitos de taquilla",
-        topRatedMovies: "Mejor valoradas"
+        topRatedMovies: "Mejor valoradas",
+        allGenres: "Todos los Géneros"
       }
     };
 
@@ -68,14 +91,72 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         document.querySelector('#movie-details .section-title:nth-of-type(3)').textContent = translations[currentLanguage].whereToWatch;
         document.querySelector('#movie-details .section-title:nth-of-type(4)').textContent = translations[currentLanguage].similarMovies;
       }
+
+      updateGenreFilter();
+    }
+
+    async function fetchGenres() {
+      try {
+        const response = await axios.get(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=${currentLanguage}`);
+        genres = response.data.genres;
+        updateGenreFilter();
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      }
+    }
+
+    function updateGenreFilter() {
+      const genreFilter = document.getElementById('genre-filter');
+      genreFilter.innerHTML = '';
+
+      const allGenresButton = document.createElement('button');
+      allGenresButton.textContent = translations[currentLanguage].allGenres;
+      allGenresButton.classList.add('active');
+      allGenresButton.addEventListener('click', () => {
+        selectedGenres = [];
+        updateGenreButtonStates();
+        fetchMovieLists();
+      });
+      genreFilter.appendChild(allGenresButton);
+
+      genres.forEach(genre => {
+        const button = document.createElement('button');
+        button.textContent = genre.name;
+        button.addEventListener('click', () => {
+          const index = selectedGenres.indexOf(genre.id);
+          if (index > -1) {
+            selectedGenres.splice(index, 1);
+          } else {
+            selectedGenres.push(genre.id);
+          }
+          updateGenreButtonStates();
+          fetchMovieLists();
+        });
+        genreFilter.appendChild(button);
+      });
+    }
+
+    function updateGenreButtonStates() {
+      const buttons = document.querySelectorAll('#genre-filter button');
+      buttons.forEach(button => {
+        if (button.textContent === translations[currentLanguage].allGenres) {
+          button.classList.toggle('active', selectedGenres.length === 0);
+        } else {
+          const genre = genres.find(g => g.name === button.textContent);
+          if (genre) {
+            button.classList.toggle('active', selectedGenres.includes(genre.id));
+          }
+        }
+      });
     }
 
     async function fetchMovieLists() {
       const currentYear = new Date().getFullYear();
+      const genreParam = selectedGenres.length > 0 ? `&with_genres=${selectedGenres.join(',')}` : '';
       const lists = [
-        { id: 'most-viewed', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=popularity.desc&primary_release_year=${currentYear}` },
-        { id: 'box-office-hits', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=revenue.desc` },
-        { id: 'top-rated', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=vote_average.desc&vote_count.gte=1000` }
+        { id: 'most-viewed', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=popularity.desc&primary_release_year=${currentYear}${genreParam}` },
+        { id: 'box-office-hits', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=revenue.desc${genreParam}` },
+        { id: 'top-rated', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=vote_average.desc&vote_count.gte=1000${genreParam}` }
       ];
 
       for (const list of lists) {
@@ -95,7 +176,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         const movieItem = document.createElement('div');
         movieItem.className = 'movie-item';
         movieItem.innerHTML = `
-          <img class="movie-poster" src="${IMG_BASE_URL}${movie.poster_path}" alt="${movie.title}">
+          <img class="movie-poster" src="${IMG_BASE_URL}${movie.poster_path}" alt="${movie.title}" loading="lazy">
           <p class="movie-item-title">${movie.title}</p>
         `;
         movieItem.addEventListener('click', () => fetchMovieData(movie.id));
@@ -107,7 +188,8 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       try {
         if (!movieId) {
           const randomPage = Math.floor(Math.random() * 500) + 1;
-          const randomMovieResponse = await axios.get(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=popularity.desc&include_adult=false&include_video=false&page=${randomPage}`);
+          const genreParam = selectedGenres.length > 0 ? `&with_genres=${selectedGenres.join(',')}` : '';
+          const randomMovieResponse = await axios.get(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${currentLanguage}&sort_by=popularity.desc&include_adult=false&include_video=false&page=${randomPage}${genreParam}`);
           const randomIndex = Math.floor(Math.random() * randomMovieResponse.data.results.length);
           movieId = randomMovieResponse.data.results[randomIndex].id;
         }
@@ -203,7 +285,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         const castItem = document.createElement('div');
         castItem.className = 'cast-item';
         castItem.innerHTML = `
-          <img class="cast-photo" src="${IMG_BASE_URL}${actor.profile_path}" alt="${actor.name}">
+          <img class="cast-photo" src="${IMG_BASE_URL}${actor.profile_path}" alt="${actor.name}" loading="lazy">
           <p class="cast-name">${actor.name}</p>
         `;
         castItem.addEventListener('click', () => openActorPopup(actor.id));
@@ -236,7 +318,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
           const providerItem = document.createElement('div');
           providerItem.className = 'provider-item';
           providerItem.innerHTML = `
-            <img class="provider-logo" src="${IMG_BASE_URL}${provider.logo_path}" alt="${provider.provider_name}">
+            <img class="provider-logo" src="${IMG_BASE_URL}${provider.logo_path}" alt="${provider.provider_name}" loading="lazy">
             <span class="provider-name">${provider.provider_name}</span>
           `;
           providerList.appendChild(providerItem);
@@ -255,7 +337,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
         const similarMovie = document.createElement('div');
         similarMovie.className = 'similar-movie';
         similarMovie.innerHTML = `
-          <img src="${IMG_BASE_URL}${similar.poster_path}" alt="${similar.title}">
+          <img src="${IMG_BASE_URL}${similar.poster_path}" alt="${similar.title}" loading="lazy">
           <div class="similar-movie-info">
             <h3 class="similar-movie-title">${similar.title}</h3>
             <p class="similar-movie-year">${similar.release_date.split('-')[0]}</p>
@@ -347,6 +429,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     document.getElementById('language-select').addEventListener('change', (event) => {
       currentLanguage = event.target.value;
       updateLanguage();
+      fetchGenres();
       if (document.getElementById('movie-details').style.display !== 'none') {
         if (currentMovieId) {
           fetchMovieData(currentMovieId);
@@ -378,4 +461,5 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     });
 
     updateLanguage();
+    fetchGenres();
     fetchMovieLists();

@@ -1,24 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const horizontalScrollContainers = document.querySelectorAll('.movie-list');
-  console.log('Horizontal scroll containers:', horizontalScrollContainers); // Debug log
-
-  horizontalScrollContainers.forEach(container => {
-    container.addEventListener('wheel', (event) => {
-      console.log('Scroll event detected on container:', container); // Debug log
-      if (event.deltaY !== 0) {
-        event.preventDefault();
-        container.scrollLeft += event.deltaY;
-      }
-    });
-  });
-});
-
-
-
 const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-    const horizontalScrollContainers = document.querySelectorAll('.movie-list');
     let currentLanguage = 'en-US';
     let currentMovieId = null;
     let genres = [];
@@ -78,6 +60,7 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       }
     };
 
+    
     function updateLanguage() {
       document.getElementById('search-input').placeholder = translations[currentLanguage].searchPlaceholder;
       document.getElementById('surprise-me').textContent = translations[currentLanguage].surpriseMe;
@@ -170,19 +153,22 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
     }
 
     function updateMovieList(listId, movies) {
-      const movieList = document.querySelector(`#${listId} .movie-list`);
-      movieList.innerHTML = '';
-      movies.forEach(movie => {
-        const movieItem = document.createElement('div');
-        movieItem.className = 'movie-item';
-        movieItem.innerHTML = `
-          <img class="movie-poster" src="${IMG_BASE_URL}${movie.poster_path}" alt="${movie.title}" loading="lazy">
-          <p class="movie-item-title">${movie.title}</p>
-        `;
-        movieItem.addEventListener('click', () => fetchMovieData(movie.id));
-        movieList.appendChild(movieItem);
-      });
-    }
+  const movieList = document.querySelector(`#${listId} .movie-list`);
+  movieList.innerHTML = '';
+  movies.forEach(movie => {
+    const movieItem = document.createElement('div');
+    movieItem.className = 'movie-item';
+    movieItem.innerHTML = `
+      <img class="movie-poster" src="${IMG_BASE_URL}${movie.poster_path}" alt="${movie.title}" loading="lazy">
+      <p class="movie-item-title">${movie.title}</p>
+    `;
+    movieItem.addEventListener('click', () => fetchMovieData(movie.id));
+    movieList.appendChild(movieItem);
+  });
+
+  // Add faster horizontal scroll functionality
+  addHorizontalScroll(movieList);
+}
 
     async function fetchMovieData(movieId = null) {
       try {
@@ -278,21 +264,33 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
       }
     }
 
-    function updateCast(cast) {
-      const castList = document.getElementById('cast-list');
-      castList.innerHTML = '';
-      cast.slice(0, 5).forEach(actor => {
-        const castItem = document.createElement('div');
-        castItem.className = 'cast-item';
-        castItem.innerHTML = `
-          <img class="cast-photo" src="${IMG_BASE_URL}${actor.profile_path}" alt="${actor.name}" loading="lazy">
-          <p class="cast-name">${actor.name}</p>
-        `;
-        castItem.addEventListener('click', () => openActorPopup(actor.id));
-        castList.appendChild(castItem);
-      });
+    function addHorizontalScroll(element) {
+  element.addEventListener('wheel', (event) => {
+    if (event.deltaY !== 0) {
+      event.preventDefault();
+      // Increase the scroll speed by multiplying the deltaY
+      element.scrollLeft += event.deltaY * 3;
     }
+  });
+}
 
+function updateCast(cast) {
+  const castList = document.getElementById('cast-list');
+  castList.innerHTML = '';
+  cast.slice(0, 5).forEach(actor => {
+    const castItem = document.createElement('div');
+    castItem.className = 'cast-item';
+    castItem.innerHTML = `
+      <img class="cast-photo" src="${IMG_BASE_URL}${actor.profile_path}" alt="${actor.name}" loading="lazy">
+      <p class="cast-name">${actor.name}</p>
+    `;
+    castItem.addEventListener('click', () => openActorPopup(actor.id));
+    castList.appendChild(castItem);
+  });
+
+  // Add faster horizontal scroll functionality
+  addHorizontalScroll(castList);
+}
     function updateProviders(providers) {
       const providersContainer = document.getElementById('providers-container');
       providersContainer.innerHTML = '';

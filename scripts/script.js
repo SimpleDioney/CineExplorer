@@ -204,10 +204,16 @@ const API_KEY = '4ea270f32fe4e8fcdfd68b4cd5a7074f';
 
     function updateUI(movie) {
       document.getElementById('movie-title').textContent = movie.title;
-      document.getElementById('movie-meta').textContent = `${formatDate(movie.release_date)} | ${movie.runtime} min | ★ ${movie.vote_average.toFixed(1)}`;
+      
+      // Convertendo minutos para horas e minutos
+      const hours = Math.floor(movie.runtime / 60);
+      const minutes = movie.runtime % 60;
+      const durationString = `${hours} h e ${minutes} min`;
+      
+      document.getElementById('movie-meta').textContent = `${formatDate(movie.release_date)} | ${durationString} | ★ ${movie.vote_average.toFixed(1)}`;
       document.getElementById('movie-overview').textContent = movie.overview;
       document.getElementById('movie-header').style.backgroundImage = `url(${IMG_BASE_URL}${movie.backdrop_path || movie.poster_path})`;
-
+    
       updateGenreTags(movie.genres);
       updateStarRating(movie.vote_average);
       updateTrailer(movie.videos.results);

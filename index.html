@@ -1,91 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineExplorer</title>
-    <link rel="stylesheet" href="styles/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <header class="header">
-      <div class="logo">CineExplorer</div>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Discover new movies...">
+<html>
+  <head>
+    <base href="cinexplorer.com" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineExplorer - Your Cinematic Journey</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="./styles/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="logo">CineExplorer</div>
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Discover new movies..."
+          />
+        </div>
+        <div class="controls">
+          <select id="language-select">
+            <option value="en-US">English</option>
+            <option value="pt-BR">Português</option>
+            <option value="es-ES">Español</option>
+          </select>
+          <button id="surprise-me">Surprise Me</button>
+        </div>
+      </header>
+
+      <main id="main-content">
+        <div id="genre-filter" class="genre-filter"></div>
+        <div id="mood-input" class="mood-input">
+          <h2 class="mood-title"></h2>
+          <p class="mood-subtitle"></p>
+          <div class="mood-buttons">
+            <button data-mood="happy">😊 <span></span></button>
+            <button data-mood="sad">😢 <span></span></button>
+            <button data-mood="anxious">😰 <span></span></button>
+            <button data-mood="bored">😑 <span></span></button>
+            <button data-mood="motivated">💪 <span></span></button>
+          </div>
+        </div>
+        <section id="mood-recommendations" style="display: none">
+          <h2 class="section-title">Recommended for your mood</h2>
+          <div class="movie-list"></div>
+        </section>
+
+        <section id="most-viewed">
+          <h2 class="section-title">
+            Most Viewed Movies in <span id="current-year"></span>
+          </h2>
+          <div class="movie-list"></div>
+        </section>
+
+        <section id="box-office-hits">
+          <h2 class="section-title">Box Office Hits</h2>
+          <div class="movie-list"></div>
+        </section>
+
+        <section id="top-rated">
+          <h2 class="section-title">Top Rated Movies</h2>
+          <div class="movie-list"></div>
+        </section>
+      </main>
+
+      <div id="search-results" class="search-results" style="display: none">
+        <h2 class="section-title">Search Results</h2>
+        <div class="movie-list"></div>
       </div>
-      <div class="controls">
-        <select id="language-select">
-          <option value="en-US">English</option>
-          <option value="pt-BR">Português</option>
-          <option value="es-ES">Español</option>
-        </select>
-        <button id="surprise-me">Surprise Me</button>
-      </div>
-    </header>
-    
-    <div id="genre-filter" class="genre-filter"></div>
-    
-    <main id="main-content">
-      <section id="most-viewed">
-        <h2 class="section-title">Most Viewed Movies in <span id="current-year"></span></h2>
-        <div class="movie-list"></div>
-      </section>
 
-      <section id="box-office-hits">
-        <h2 class="section-title">Box Office Hits</h2>
-        <div class="movie-list"></div>
-      </section>
+      <div id="movie-details" class="movie-display" style="display: none">
+        <div id="movie-header" class="movie-header">
+          <div class="movie-title-container">
+            <h1 id="movie-title" class="movie-title">Loading...</h1>
+            <p id="movie-meta" class="movie-meta"></p>
+          </div>
+        </div>
 
-      <section id="top-rated">
-        <h2 class="section-title">Top Rated Movies</h2>
-        <div class="movie-list"></div>
-      </section>
-    </main>
+        <div class="movie-content">
+          <p id="movie-overview" class="movie-overview"></p>
 
-    <div id="movie-details" class="movie-display" style="display: none;">
-      <div id="movie-header" class="movie-header">
-        <div class="movie-title-container">
-          <h1 id="movie-title" class="movie-title">Loading...</h1>
-          <p id="movie-meta" class="movie-meta"></p>
+          <div id="genre-tags" class="genre-tags"></div>
+
+          <div class="rating-container">
+            <div id="star-rating"></div>
+            <span id="rating-value" class="rating-value"></span>
+          </div>
+
+          <h2 class="section-title">Trailer</h2>
+          <div id="trailer-container" class="trailer-container"></div>
+
+          <h2 class="section-title">Main Cast</h2>
+          <div id="cast-list" class="cast-list"></div>
+
+          <h2 class="section-title">Where to Watch</h2>
+          <div id="providers-container" class="providers-container"></div>
+
+          <h2 class="section-title">Similar Movies</h2>
+          <div id="similar-movies" class="similar-movies"></div>
         </div>
       </div>
-      <div class="movie-content">
-        <p id="movie-overview" class="movie-overview"></p>
-        
-        <div id="genre-tags" class="genre-tags"></div>
+    </div>
 
-        <div class="rating-container">
-          <div id="star-rating"></div>
-          <span id="rating-value" class="rating-value"></span>
-        </div>
-
-        <h2 class="section-title">Trailer</h2>
-        <div id="trailer-container" class="trailer-container"></div>
-        
-        <h2 class="section-title">Main Cast</h2>
-        <div id="cast-list" class="cast-list"></div>
-        
-        <h2 class="section-title">Where to Watch</h2>
-        <div id="providers-container" class="providers-container"></div>
-        
-        <h2 class="section-title">Similar Movies</h2>
-        <div id="similar-movies" class="similar-movies"></div>
+    <div id="popup-overlay" class="popup-overlay" style="display: none">
+      <div class="popup-content">
+        <button class="popup-close">&times;</button>
+        <h2 id="popup-title" class="popup-title"></h2>
+        <img id="popup-image" class="popup-image" src="" alt="Actor photo" />
+        <div id="popup-info" class="popup-info"></div>
+        <p id="popup-bio" class="popup-bio"></p>
+        <div id="popup-filmography" class="popup-filmography"></div>
       </div>
     </div>
-  </div>
 
-  <div id="popup-overlay" class="popup-overlay" style="display: none;">
-    <div class="popup-content">
-      <button class="popup-close">&times;</button>
-      <h2 id="popup-title" class="popup-title"></h2>
-      <img id="popup-image" class="popup-image" src="" alt="Actor photo">
-      <div id="popup-info" class="popup-info"></div>
-      <p id="popup-bio" class="popup-bio"></p>
-      <div id="popup-filmography" class="popup-filmography"></div>
-    </div>
-  </div>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="scripts/script.js"></script>
-</body>
+    <script src="./scripts/script.js"></script>
+  </body>
 </html>

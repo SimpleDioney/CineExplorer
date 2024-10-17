@@ -682,21 +682,20 @@ document
     }
   }
 
-  // Event listener for 'keypress' (desktop)
-  searchInput.addEventListener('keypress', async (event) => {
+  searchInput.addEventListener('keydown', async (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent form submission
-      const query = event.target.value;
-      await handleSearch(query);
+        event.preventDefault(); // Previne envio de formulário
+        const query = event.target.value;
+        await handleSearch(query);
     }
-  });
+});
 
-  // Event listener for 'search' (mobile)
-  searchInput.addEventListener('search', async (event) => {
-    event.preventDefault(); // Prevent form submission
+// Evento para busca (dispositivos móveis)
+searchInput.addEventListener('search', async (event) => {
+    event.preventDefault(); // Previne envio de formulário
     const query = event.target.value;
     await handleSearch(query);
-  });
+});
 
   // Add this new function to display search results
   function displaySearchResults(results) {

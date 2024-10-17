@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap");
 
 :root {
   --primary-color: #e50914;
@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
@@ -87,7 +87,7 @@ body.popup-open .container {
 }
 
 .search-bar::after {
-  content: '🔍';
+  content: "🔍";
   position: absolute;
   right: 25px;
   top: 50%;
@@ -102,7 +102,8 @@ body.popup-open .container {
   flex-wrap: wrap;
 }
 
-select, button {
+select,
+button {
   padding: 12px 25px;
   border: none;
   border-radius: 30px;
@@ -114,7 +115,8 @@ select, button {
   font-weight: 600;
 }
 
-select:hover, button:hover {
+select:hover,
+button:hover {
   background-color: var(--hover-color);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(244, 6, 18, 0.3);
@@ -143,6 +145,67 @@ select:hover, button:hover {
   color: var(--text-color);
 }
 
+.mood-input {
+  margin-bottom: 30px;
+  text-align: center;
+  background-color: var(--card-color);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mood-title {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.mood-subtitle {
+  font-size: 1em;
+  margin-bottom: 20px;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.mood-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.mood-buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+  font-size: 1.5em;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mood-buttons button span {
+  font-size: 0.6em;
+  margin-top: 5px;
+}
+
+.mood-buttons button:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+}
+
+.mood-buttons button.active {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+}
+
 .movie-display {
   display: flex;
   flex-direction: column;
@@ -164,13 +227,17 @@ select:hover, button:hover {
 }
 
 .movie-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(to bottom, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 20, 20, 0) 0%,
+    rgba(20, 20, 20, 1) 100%
+  );
 }
 
 .movie-title-container {
@@ -235,7 +302,7 @@ select:hover, button:hover {
 
 .movie-item {
   flex: 0 0 180px;
-  flex-shrink: 0; 
+  flex-shrink: 0;
   cursor: pointer;
   transition: transform 0.3s ease;
   position: relative;
@@ -265,7 +332,11 @@ select:hover, button:hover {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
   padding: 20px;
   font-size: 0.9em;
   text-align: center;
@@ -291,8 +362,12 @@ select:hover, button:hover {
   transition: opacity 0.3s ease;
 }
 
-.nav-button.prev { left: 10px; }
-.nav-button.next { right: 10px; }
+.nav-button.prev {
+  left: 10px;
+}
+.nav-button.next {
+  right: 10px;
+}
 
 .movie-list-container:hover .nav-button {
   opacity: 1;
@@ -377,7 +452,11 @@ select:hover, button:hover {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
   padding: 20px 15px;
   transform: translateY(100%);
   transition: transform 0.3s ease;
@@ -682,6 +761,10 @@ select:hover, button:hover {
     justify-content: center;
   }
 
+  .mood-buttons {
+    flex-direction: column;
+  }
+
   .movie-header {
     height: 60vw;
   }
@@ -854,4 +937,74 @@ select:hover, button:hover {
     width: 100px;
     height: 100px;
   }
+}
+
+#search-results {
+  padding: 20px;
+  display: none;
+}
+
+#search-results .movie-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+#search-results .movie-list::-webkit-scrollbar {
+  display: none;
+}
+
+#search-results .movie-item {
+  flex: 0 0 180px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+#search-results .movie-item:hover {
+  transform: scale(1.05);
+}
+
+#search-results .movie-poster {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+#search-results .movie-item:hover .movie-poster {
+  transform: scale(1.1);
+}
+
+#search-results .movie-item-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding: 20px;
+  font-size: 0.9em;
+  text-align: center;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#search-results .movie-item:hover .movie-item-title {
+  opacity: 1;
 }

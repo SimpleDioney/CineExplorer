@@ -654,107 +654,111 @@ document
     }
   });
 
-function displaySearchResults(results) {
-  console.log("Displaying search results:", results); 
+  const searchInput = document.getElementById('search-input');
 
-  const mainContent = document.getElementById("main-content");
-  const movieDetails = document.getElementById("movie-details");
-  let searchResultsContainer = document.getElementById("search-results");
-
-  if (!searchResultsContainer) {
-    console.log("Creating new search results container"); 
-    searchResultsContainer = document.createElement("div");
-    searchResultsContainer.id = "search-results";
-    document.body.insertBefore(searchResultsContainer, movieDetails);
+  // Function to handle search
+  async function handleSearch(query) {
+    console.log('Search query:', query); // Debug log
+    try {
+      const searchResponse = await axios.get(`${BASE_URL}/search/movie`, {
+        params: {
+          api_key: API_KEY,
+          language: currentLanguage,
+          query: query,
+          page: 1
+        }
+      });
+      
+      console.log('Search response:', searchResponse.data); // Debug log
+      
+      if (searchResponse.data.results.length > 0) {
+        displaySearchResults(searchResponse.data.results);
+      } else {
+        alert('No results found for your search.');
+      }
+    } catch (error) {
+      console.error('Error searching for movies:', error);
+      alert('An error occurred while searching for movies. Please try again later.');
+    }
   }
 
-  const searchResultsHTML = `
-          <h2 class="section-title">${
-            translations[currentLanguage].searchResults
-          }</h2>
-          <div class="movie-list">
-            ${results
-              .map(
-                (movie) => `
-              <div class="movie-item" data-movie-id="${movie.id}">
-                <img class="movie-poster" src="${
-                  movie.poster_path
-                    ? IMG_BASE_URL + movie.poster_path
-                    : "/path/to/placeholder-image.jpg"
-                }" alt="${movie.title}">
-                <p class="movie-item-title">${movie.title}</p>
-              </div>
-            `
-              )
-              .join("")}
-          </div>
-        `;
-
-  searchResultsContainer.innerHTML = searchResultsHTML;
-  console.log("Search results HTML:", searchResultsHTML); 
-
-  mainContent.style.display = "none";
-  movieDetails.style.display = "none";
-  searchResultsContainer.style.display = "block";
-
-  const searchResultItems = document.querySelectorAll(
-    "#search-results .movie-item"
-  );
-  searchResultItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      const movieId = item.getAttribute("data-movie-id");
-      fetchMovieData(movieId);
-    });
-  });
-
-  const movieList = searchResultsContainer.querySelector(".movie-list");
-  addHorizontalScroll(movieList);
-
-  console.log("Search results displayed"); 
-}
-
-document
-  .getElementById("search-input")
-  .addEventListener("keypress", async (event) => {
-    if (event.key === "Enter") {
+  // Event listener for 'keypress' (desktop)
+  searchInput.addEventListener('keypress', async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission
       const query = event.target.value;
-      console.log("Search query:", query); 
-      try {
-        const searchResponse = await axios.get(`${BASE_URL}/search/movie`, {
-          params: {
-            api_key: API_KEY,
-            language: currentLanguage,
-            query: query,
-            page: 1,
-          },
-        });
-
-        console.log("Search response:", searchResponse.data); 
-
-        if (searchResponse.data.results.length > 0) {
-          displaySearchResults(searchResponse.data.results);
-        } else {
-          alert("No results found for your search.");
-        }
-      } catch (error) {
-        console.error("Error searching for movies:", error);
-        alert(
-          "An error occurred while searching for movies. Please try again later."
-        );
-      }
+      await handleSearch(query);
     }
   });
 
-document.getElementById("surprise-me").addEventListener("click", () => {
-  fetchMovieData();
-});
+  // Event listener for 'search' (mobile)
+  searchInput.addEventListener('search', async (event) => {
+    event.preventDefault(); // Prevent form submission
+    const query = event.target.value;
+    await handleSearch(query);
+  });
 
-document.querySelector(".logo").addEventListener("click", () => {
-  showMainContent();
+  // Add this new function to display search results
+  function displaySearchResults(results) {
+    console.log('Displaying search results:', results); // Debug log
+  
+    const mainContent = document.getElementById('main-content');
+    const movieDetails = document.getElementById('movie-details');
+    let searchResultsContainer = document.getElementById('search-results');
+  
+    // Create search results container if it doesn't exist
+    if (!searchResultsContainer) {
+      console.log('Creating new search results container'); // Debug log
+      searchResultsContainer = document.createElement('div');
+      searchResultsContainer.id = 'search-results';
+      document.body.insertBefore(searchResultsContainer, movieDetails);
+    }
+  
+    const searchResultsHTML = `
+      <h2 class="section-title">${translations[currentLanguage].searchResults}</h2>
+      <div class="movie-list">
+        ${results.map(movie => `
+          <div class="movie-item" data-movie-id="${movie.id}">
+            <img class="movie-poster" src="${movie.poster_path ? IMG_BASE_URL + movie.poster_path : '/path/to/placeholder-image.jpg'}" alt="${movie.title}">
+            <p class="movie-item-title">${movie.title}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  
+    searchResultsContainer.innerHTML = searchResultsHTML;
+    console.log('Search results HTML:', searchResultsHTML); // Debug log
+  
+    mainContent.style.display = 'none';
+    movieDetails.style.display = 'none';
+    searchResultsContainer.style.display = 'block';
+  
+    // Add click event listeners to search result items
+    const searchResultItems = document.querySelectorAll('#search-results .movie-item');
+    searchResultItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const movieId = item.getAttribute('data-movie-id');
+        fetchMovieData(movieId);
+      });
+    });
+  
+    // Add horizontal scroll functionality to search results
+    const movieList = searchResultsContainer.querySelector('.movie-list');
+    addHorizontalScroll(movieList);
+  
+    console.log('Search results displayed'); // Debug log
+  }
+
+  document.getElementById('surprise-me').addEventListener('click', () => {
+    fetchMovieData();
+  });
+
+  document.querySelector('.logo').addEventListener('click', () => {
+    showMainContent();
+    fetchMovieLists();
+  });
+
+  handleMoodSelection();
+  updateLanguage();
+  fetchGenres();
   fetchMovieLists();
-});
-
-handleMoodSelection();
-updateLanguage();
-fetchGenres();
-fetchMovieLists();

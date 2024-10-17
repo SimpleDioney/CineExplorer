@@ -684,11 +684,16 @@ document
 
   searchInput.addEventListener('keydown', async (event) => {
     if (event.key === 'Enter') {
-        event.preventDefault(); // Previne envio de formulário
-        const query = event.target.value;
-        await handleSearch(query);
+        event.preventDefault(); // Previne mudança de foco
+        event.stopPropagation(); // Impede propagação do evento
+        searchInput.focus(); // Garante que o foco permaneça no campo de busca
+        const query = event.target.value.trim();
+        if (query) {
+            await handleSearch(query);
+        }
     }
 });
+
 
 // Evento para busca (dispositivos móveis)
 searchInput.addEventListener('search', async (event) => {

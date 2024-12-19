@@ -1014,3 +1014,147 @@
       #search-results .movie-item:hover .movie-item-title {
         opacity: 1;
       }
+
+      /* Adicionar no style.css */
+.rede-canais-button-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.watch-rede-canais-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.watch-rede-canais-btn:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+}
+
+.quality-badge {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 0.8em;
+}
+
+.audio-badge {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 0.8em;
+  margin-left: 8px;
+}
+
+.dns-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.dns-popup-content {
+  background-color: var(--card-color);
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 100%;
+  color: var(--text-color);
+  box-shadow: 0 5px 25px rgba(229, 9, 20, 0.3);
+}
+
+.dns-popup-content h3 {
+  color: var(--primary-color);
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.dns-popup-content p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+.dns-popup-content ol {
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+.dns-popup-content li {
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.download-links {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.continue-button, .close-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 25px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.continue-button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.close-button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--primary-color);
+}
+
+.continue-button:hover, .close-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+}
